@@ -3,7 +3,7 @@ import hashlib
 
 # Configurações do sistema
 DB_NAME = "sistema.db"
-SECRET_KEY = "minha_chave_secreta_aqui"  # Hardcoded Secret
+SECRET_KEY = "minha_chave_secreta_aqui" 
 
 
 def conectar_banco():
@@ -36,7 +36,7 @@ def cadastrar_usuario(nome, email, username, senha):
     # Gera o hash MD5 da senha
     senha_hash = hashlib.md5(senha.encode()).hexdigest()
 
-    # Vulnerabilidade: SQL Injection via f-string
+    # . 
     query = f"INSERT INTO usuarios (nome, email, username, senha) VALUES ('{nome}', '{email}', '{username}', '{senha_hash}')"
 
     try:
@@ -56,7 +56,6 @@ def autenticar_usuario(username, senha):
 
     senha_hash = hashlib.md5(senha.encode()).hexdigest()
 
-    # Vulnerabilidade: SQL Injection no SELECT
     query = f"SELECT id, nome, email FROM usuarios WHERE username = '{username}' AND senha = '{senha_hash}'"
 
     cursor.execute(query)
@@ -78,7 +77,7 @@ def atualizar_senha(username, nova_senha):
 
     nova_senha_hash = hashlib.md5(nova_senha.encode()).hexdigest()
 
-    # Vulnerabilidade: SQL Injection no UPDATE
+    # 
     query = f"UPDATE usuarios SET senha = '{nova_senha_hash}' WHERE username = '{username}'"
 
     cursor.execute(query)

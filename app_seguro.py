@@ -30,13 +30,14 @@ def inicializar_banco():
 
 
 def cadastrar_usuario(nome, email, username, senha):
-    """Cadastra um novo usuário utilizando consultas parametrizadas."""
+    """Cadastra um novo usuário utilizando consultas parametrizadas e SHA-256."""
     conn = conectar_banco()
     cursor = conn.cursor()
 
-    senha_hash = hashlib.md5(senha.encode()).hexdigest()
+    # Mitigação de hash fraco: uso de SHA-256 em vez de MD5
+    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
 
-    # Mitigação: Placeholders (?) para prevenir SQL Injection
+    # Mitigação de SQLi: Placeholders (?)
     query = "INSERT INTO usuarios (nome, email, username, senha) VALUES (?, ?, ?, ?)"
 
     try:
@@ -54,9 +55,9 @@ def autenticar_usuario(username, senha):
     conn = conectar_banco()
     cursor = conn.cursor()
 
-    senha_hash = hashlib.md5(senha.encode()).hexdigest()
+    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
 
-    # Mitigação: Uso de placeholders (?) no SELECT
+    # Mitigação de SQLi: Placeholders (?) no SELECT
     query = "SELECT id, nome, email FROM usuarios WHERE username = ? AND senha = ?"
 
     cursor.execute(query, (username, senha_hash))
@@ -76,9 +77,9 @@ def atualizar_senha(username, nova_senha):
     conn = conectar_banco()
     cursor = conn.cursor()
 
-    nova_senha_hash = hashlib.md5(nova_senha.encode()).hexdigest()
+    nova_senha_hash = hashlib.sha256(nova_senha.encode()).hexdigest()
 
-    # Mitigação: Placeholder (?) no UPDATE
+    # Mitigação de SQLi: Placeholder (?) no UPDATE
     query = "UPDATE usuarios SET senha = ? WHERE username = ?"
 
     cursor.execute(query, (nova_senha_hash, username))
